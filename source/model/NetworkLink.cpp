@@ -1,11 +1,11 @@
 #include "NetworkLink.h"
 
-namespace bitflow
+namespace bitflow::model
 {
 
 NetworkLink::NetworkLink()
 {
 }
 
-} // namespace bitflow
+} // namespace bitflow::model
 

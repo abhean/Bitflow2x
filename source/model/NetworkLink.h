@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Types.h"
+#include "foundation/Types.h"
 
-namespace bitflow
+namespace bitflow::model
 {
 
 class NetworkLink
@@ -18,5 +18,5 @@ private:
   Bandwidth bandwidth;
 };
 
-} // namespace bitflow
+} // namespace bitflow::model
 
