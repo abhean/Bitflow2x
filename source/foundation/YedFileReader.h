@@ -1,0 +1,4 @@
+#ifndef YEDFILEREADER_H
+#define YEDFILEREADER_H
+
+#endif // YEDFILEREADER_H

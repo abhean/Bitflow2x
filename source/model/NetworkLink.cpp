@@ -3,9 +3,5 @@
 namespace bitflow::model
 {
 
-NetworkLink::NetworkLink()
-{
-}
-
 } // namespace bitflow::model
 

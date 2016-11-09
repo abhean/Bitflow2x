@@ -1,18 +1,12 @@
 #pragma once
 
-#include "foundation/Types.h"
+#include "Types.h"
 
 namespace bitflow::model
 {
 
-class NetworkLink
+struct NetworkLink
 {
-public:
-
-  NetworkLink();
-
-private:
-
   Length length;
   Time latency;
   Bandwidth bandwidth;

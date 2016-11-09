@@ -12,16 +12,27 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/N3888_RefImpl/N3888_RefImpl/src
 
 set(SRC_LIST
         main.cpp
+        model/Types.h
         model/NetworkNode.cpp
         model/NetworkNode.h
         model/Network.h
         model/Network.cpp
         model/NetworkLink.cpp
         model/NetworkLink.h
-        foundation/Types.h
+        foundation/YedFileReader.h
+        foundation/Memory.h
 )
 
 add_executable(${PROJECT_NAME} ${SRC_LIST})
+
+set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME    OFF)
+find_package(Boost 1.62.0 COMPONENTS graph ...)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -31,14 +42,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 
-# Detect and add SFML
-#Find any version 2.X of SFML
-#See the FindSFML.cmake file for additional details and instructions
-find_package(SFML 2 REQUIRED system window graphics network audio)
-if(SFML_FOUND)
-  include_directories(${SFML_INCLUDE_DIR})
-  target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES} io2d X11 cairo boost_graph stdc++fs)
-endif()
+target_link_libraries(${EXECUTABLE_NAME} io2d X11 cairo boost_graph stdc++fs)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14)
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)

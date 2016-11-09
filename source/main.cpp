@@ -1,16 +1,15 @@
 #include "io2d.h"
-#include <chrono>
-#include <assert.h>
-#include <vector>
 #include "model/Network.h"
+#include "foundation/Memory.h"
 #include "boost/graph/graphml.hpp"
 #include <experimental/filesystem>
+#include <chrono>
+#include <cassert>
+#include <vector>
+
 
 int main()
 {
-  // Test basic types/units
-  bitflow::Position p {1.0f * bitflow::meter, 2.0f * bitflow::meter, 3.0f * bitflow::meter};
-  bitflow::Position p3 { p * 2.0f };
   // Test network loading
   std::cout << std::experimental::filesystem::current_path() << std::endl;
   std::ifstream graphStream("data/samplenetwork.graphml");
