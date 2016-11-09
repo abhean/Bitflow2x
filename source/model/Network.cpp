@@ -78,25 +78,31 @@ public:
 
     virtual void set_vertex_property(const std::string& name, boost::any vertex, const boost::property_tree::ptree& value, const std::string& value_type) override
     {
-      auto bool_type = boost::hana::second(boost::hana::find_if(value_map, [](auto const&& name_type_tuple) { return boost::hana::first(name_type_tuple) == BOOST_HANA_STRING("bool"); }).value());
-      //auto bool_type = value_map[BOOST_HANA_STRING("int")];
-      using TBoolType = decltype(bool_type)::type;
-      TBoolType b = "test";
-      std::cout << b << std::endl;
-
       Network::vertex_descriptor nodeDescriptor = boost::any_cast<Network::vertex_descriptor>(vertex);
-      auto& node = m_g[nodeDescriptor];
+      NetworkNode& node = m_g[nodeDescriptor];
 
-      boost::hana::for_each(boost::hana::accessors<NetworkNode>(), [&](auto const& nodePropertyAccessor) {
-        auto nodePropertyName = boost::hana::first(nodePropertyAccessor);
-        if (boost::hana::to<char const*>(nodePropertyName) == name)
-        {
-           auto nodePropertyGetter = boost::hana::second(nodePropertyAccessor);
-           auto& nodePropertyValueRef = nodePropertyGetter(node);
-           using NodePropertyValueType = typename std::remove_reference<decltype(nodePropertyValueRef)>::type;
-           nodePropertyValueRef = property_value_translator<NodePropertyValueType>::get_value(value);
-        }
-      });
+      if (value_type == "nodegraphics")
+      {
+        auto const& geometryNode = value.get_child(boost::property_tree::path("y:ShapeNode.y:Geometry"));
+        auto const& geometryNodeAttributes = geometryNode.get_child("<xmlattr>");
+
+        X(node.position) = geometryNodeAttributes.get<float>("x") * meter;
+        Y(node.position) = geometryNodeAttributes.get<float>("y") * meter;
+      }
+      else
+      {
+        //default attribute handling (hana reflection)
+        boost::hana::for_each(boost::hana::accessors<NetworkNode>(), [&](auto const& nodePropertyAccessor) {
+          auto nodePropertyName = boost::hana::first(nodePropertyAccessor);
+          if (boost::hana::to<char const*>(nodePropertyName) == name)
+          {
+             auto nodePropertyGetter = boost::hana::second(nodePropertyAccessor);
+             auto& nodePropertyValueRef = nodePropertyGetter(node);
+             using NodePropertyValueType = typename std::remove_reference<decltype(nodePropertyValueRef)>::type;
+             nodePropertyValueRef = property_value_translator<NodePropertyValueType>::get_value(value);
+          }
+        });
+      }
     }
 
     virtual void set_edge_property(const std::string& name, boost::any edge, const boost::property_tree::ptree& value, const std::string& value_type) override
@@ -112,21 +118,22 @@ private:
 }
 
 
-std::experimental::optional<Network> LoadNetworkFromGraphML(std::istream& in)
+std::experimental::optional<Network> LoadNetworkFromGraphML(std::experimental::filesystem::path const& path)
 {
-//  try
+  std::experimental::optional<Network> optionalNetwork;
+
+  std::ifstream graphStream(path);
+  if (graphStream.is_open())
   {
     Network network;
 
     mutate_network_impl gml(network);
-    boost::read_graphml(in, gml, 0);
+    boost::read_graphml(graphStream, gml, 0);
 
-    return std::experimental::make_optional(network);
+    optionalNetwork = std::experimental::make_optional(network);
   }
-//  catch (std::exception& exception)
-//  {
-//    return std::experimental::nullopt;
-//  }
+
+  return optionalNetwork;
 }
 
 } } // namespace bitflow::model

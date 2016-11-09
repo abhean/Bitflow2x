@@ -14,7 +14,7 @@ namespace bitflow { namespace model {
 struct network_node_t { typedef boost::vertex_property_tag kind; };
 using Network = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, NetworkNode, NetworkLink>;
 
-std::experimental::optional<Network> LoadNetworkFromGraphML(std::istream& _in_);
+std::experimental::optional<Network> LoadNetworkFromGraphML(std::experimental::filesystem::path const& path);
 
 
 } } // namespace bitflow::model
